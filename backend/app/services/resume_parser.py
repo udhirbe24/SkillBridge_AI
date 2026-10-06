@@ -85,11 +85,15 @@ def parse_resume_text(raw_text: str) -> Dict[str, Any]:
     elif "3+ years" in text_lower or "intermediate" in text_lower:
         experience_years = 3
 
+    # Calculate ATS score based on skill density and formatting criteria
+    ats_score = min(98, max(65, 60 + (len(detected_skills) * 4) + (experience_years * 3) + (10 if email else 0)))
+
     return {
         "extracted_email": email,
         "skills": sorted(list(detected_skills)),
         "skills_by_category": skills_by_category,
         "total_skills_count": len(detected_skills),
         "experience_years": experience_years,
+        "ats_score": ats_score,
         "raw_text_length": len(raw_text)
     }

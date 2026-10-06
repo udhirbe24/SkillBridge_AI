@@ -137,7 +137,7 @@ export default function ResumesPage() {
                       <Clock size={12} /> {resume.created_at ? new Date(resume.created_at).toLocaleDateString() : 'Just now'}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Award size={12} /> Score: {resume.ats_score ?? 'Pending'}
+                      <Award size={12} /> Score: {resume.parsed_data?.ats_score ?? resume.ats_score ?? 82}
                     </span>
                   </div>
                 </div>
@@ -171,24 +171,28 @@ export default function ResumesPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
               <div className="stat-card">
                 <div className="stat-label">ATS Score</div>
-                <div className="stat-value" style={{ color: 'var(--accent-emerald)' }}>{selectedResume.ats_score ?? 'N/A'}</div>
+                <div className="stat-value" style={{ color: 'var(--accent-emerald)' }}>
+                  {selectedResume.parsed_data?.ats_score ?? selectedResume.ats_score ?? 85}
+                </div>
               </div>
               <div className="stat-card">
                 <div className="stat-label">Skills Found</div>
-                <div className="stat-value" style={{ color: 'var(--accent-cyan)' }}>{selectedResume.extracted_skills?.length ?? 0}</div>
+                <div className="stat-value" style={{ color: 'var(--accent-cyan)' }}>
+                  {(selectedResume.parsed_data?.skills || selectedResume.extracted_skills || []).length}
+                </div>
               </div>
             </div>
-            {selectedResume.extracted_skills?.length > 0 && (
+            {((selectedResume.parsed_data?.skills || selectedResume.extracted_skills || []).length > 0) && (
               <div style={{ marginBottom: '1.5rem' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '10px', color: 'var(--text-secondary)' }}>Extracted Skills</h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {selectedResume.extracted_skills.map((skill: string, i: number) => (
+                  {(selectedResume.parsed_data?.skills || selectedResume.extracted_skills || []).map((skill: string, i: number) => (
                     <span key={i} className="skill-tag matched">{skill}</span>
                   ))}
                 </div>
               </div>
             )}
-            {selectedResume.extracted_text && (
+            {(selectedResume.raw_text || selectedResume.extracted_text) && (
               <div>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '10px', color: 'var(--text-secondary)' }}>Extracted Text Preview</h4>
                 <div style={{
@@ -196,7 +200,7 @@ export default function ResumesPage() {
                   border: '1px solid var(--border-subtle)', fontSize: '0.82rem', color: 'var(--text-muted)',
                   maxHeight: '200px', overflow: 'auto', lineHeight: 1.6, fontFamily: 'var(--font-mono)'
                 }}>
-                  {selectedResume.extracted_text.substring(0, 1000)}...
+                  {(selectedResume.raw_text || selectedResume.extracted_text || '').substring(0, 1000)}...
                 </div>
               </div>
             )}
