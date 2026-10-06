@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Color Palette - HSL Tailored Dark Theme */
+  --bg-dark: hsl(222, 47%, 7%);
+  --bg-card: hsla(222, 40%, 12%, 0.7);
+  --bg-card-hover: hsla(222, 40%, 16%, 0.85);
+  --bg-elevated: hsl(222, 35%, 15%);
+  
+  --border-subtle: hsla(217, 33%, 25%, 0.6);
+  --border-glow: hsla(263, 70%, 58%, 0.4);
+
+  --text-primary: hsl(210, 40%, 98%);
+  --text-secondary: hsl(215, 20%, 70%);
+  --text-muted: hsl(215, 16%, 50%);
+
+  /* Brand Accents */
+  --accent-cyan: hsl(190, 95%, 50%);
+  --accent-violet: hsl(265, 89%, 66%);
+  --accent-emerald: hsl(152, 76%, 48%);
+  --accent-amber: hsl(38, 92%, 50%);
+  --accent-rose: hsl(350, 89%, 60%);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-violet) 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  --gradient-surface: linear-gradient(180deg, hsla(222, 40%, 14%, 0.8) 0%, hsla(222, 40%, 9%, 0.9) 100%);
+
+  /* Shadows & Blur */
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 25px -5px hsla(265, 89%, 66%, 0.3);
+  --backdrop-blur: blur(16px);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  background: var(--bg-card-hover);
+  border-color: hsla(265, 70%, 60%, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+}
+
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-success {
+  background: hsla(152, 76%, 48%, 0.15);
+  color: var(--accent-emerald);
+  border: 1px solid hsla(152, 76%, 48%, 0.3);
+}
+
+.badge-warning {
+  background: hsla(38, 92%, 50%, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid hsla(38, 92%, 50%, 0.3);
+}
+
+.badge-primary {
+  background: hsla(265, 89%, 66%, 0.15);
+  color: var(--accent-violet);
+  border: 1px solid hsla(265, 89%, 66%, 0.3);
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-violet);
+}
