@@ -110,3 +110,24 @@ def get_resume_by_id(
         )
 
     return resume
+
+@router.post("/match-jd")
+def match_resume_with_jd(
+    payload: dict,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Compares candidate's latest uploaded resume against a pasted Job Description.
+    """
+    job_description = payload.get("job_description", "")
+    if not job_description:
+        raise HTTPException(status_code=400, detail="job_description text is required.")
+
+    resume = db.query(ResumeDocument).filter(ResumeDocument.user_id == current_user.id).order_by(ResumeDocument.created_at.desc()).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="No uploaded resume found. Please upload a resume first.")
+
+    from app.services.resume_parser import compare_resume_with_job_description
+    match_result = compare_resume_with_job_description(resume.raw_text, job_description)
+    return match_result

@@ -20,6 +20,9 @@ export default function ResumesPage() {
   const [success, setSuccess] = useState('');
   const [selectedResume, setSelectedResume] = useState<any>(null);
   const [loadingList, setLoadingList] = useState(true);
+  const [jobDescription, setJobDescription] = useState('');
+  const [jdMatchResult, setJdMatchResult] = useState<any>(null);
+  const [matchingJD, setMatchingJD] = useState(false);
 
   useEffect(() => { if (!isLoading && !user) router.push('/login'); }, [user, isLoading, router]);
 
@@ -28,6 +31,28 @@ export default function ResumesPage() {
       resumeAPI.list(token).then(setResumes).catch(() => {}).finally(() => setLoadingList(false));
     }
   }, [token]);
+
+  async function handleMatchJD() {
+    if (!token || !jobDescription.trim()) return;
+    setMatchingJD(true);
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/resumes/match-jd', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ job_description: jobDescription })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'JD matching failed');
+      setJdMatchResult(data);
+    } catch (err: any) {
+      setError(err.message || 'JD matching failed');
+    } finally {
+      setMatchingJD(false);
+    }
+  }
 
   async function handleUpload(file: File) {
     if (!token) return;
@@ -102,6 +127,53 @@ export default function ResumesPage() {
           <button onClick={() => setSuccess('')} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}><X size={14} /></button>
         </div>
       )}
+
+      {/* Job Description Matcher */}
+      <div className="glass-panel-static" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+        <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <TrendingUp size={18} style={{ color: 'var(--accent-violet)' }} /> Compare Against Job Description
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          Paste a target Job Description to compare against your uploaded resume for semantic similarity and missing keywords.
+        </p>
+        <textarea
+          className="form-input"
+          rows={3}
+          placeholder="Paste Job Description here (e.g. Seeking Python Developer with FastAPI, PostgreSQL, and Docker experience...)"
+          value={jobDescription}
+          onChange={e => setJobDescription(e.target.value)}
+          style={{ width: '100%', marginBottom: '1rem', fontFamily: 'inherit' }}
+        />
+        <button
+          className="btn-primary"
+          onClick={handleMatchJD}
+          disabled={matchingJD || !jobDescription.trim()}
+          style={{ fontSize: '0.88rem' }}
+        >
+          {matchingJD ? 'Comparing...' : 'Analyze JD Match'}
+        </button>
+
+        {jdMatchResult && (
+          <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'hsla(222, 47%, 5%, 0.6)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Match Similarity Score</span>
+              <span className="badge badge-success" style={{ fontSize: '0.9rem' }}>{jdMatchResult.match_percentage}</span>
+            </div>
+            {jdMatchResult.missing_keywords?.length > 0 ? (
+              <div>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent-rose)' }}>Missing Keywords: </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                  {jdMatchResult.missing_keywords.map((kw: string, idx: number) => (
+                    <span key={idx} className="badge badge-warning" style={{ fontSize: '0.75rem' }}>{kw}</span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div style={{ color: 'var(--accent-emerald)', fontSize: '0.85rem' }}>Great match! All key job description skills are covered in your resume.</div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Resume List */}
       <h2 className="section-title">Your Resumes</h2>
