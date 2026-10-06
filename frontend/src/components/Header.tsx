@@ -22,6 +22,7 @@ export default function Header() {
     { href: '/assessments', label: 'Assessments', icon: Code2 },
     { href: '/interviews', label: 'Interviews', icon: Mic },
     { href: '/jobs', label: 'Jobs', icon: Briefcase },
+    { href: '/analytics', label: 'Analytics', icon: LayoutDashboard },
   ];
 
   return (
