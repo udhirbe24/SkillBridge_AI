@@ -1,0 +1,268 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% -----------------------------------------------------
+% SkillBridge AI: 
+% -----------------------------------------------------
+
+% Variable: Lab Instructor
+\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
+  \gdef\Bvr@LabInstructor{#1}}
+% default
+\newcommand{\Bvr@LabInstructor}{Ms.Paramveer Kaur}
+% public accessor
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
+\makeatother
+
+% Add subtitle
+\usepackage{titling}
+% -- Set title bold
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
+\makeatletter
+\newcommand{\BvrSubtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip 0.5em}%
+}
+\makeatother
+
+
+
+% Hints in the section title(s)
+\newcommand{\BvrHint}[1]{%
+  {\normalfont\normalsize\itshape\hfill #1}}
+
+% -----------------------------------------------------
+
+\title{SkillBridge AI: Intelligent Career Development Platform for College Students}
+
+\BvrSetLabInstructor{Ms.Paramveer Kaur}
+
+\BvrSubtitle{%
+  Project Proposal for UCS503P  \\
+  Submitted to: \BvrLabInstructorValue \\ \bfseries
+  Thapar Institute of Engineering and Technology% 
+}
+
+\author{
+  Uday Dhir, COE%
+  \thanks{Roll No: \texttt{1024030168}, %
+    Email: \texttt{udhir\_be24@thapar.edu}}
+  \and 
+  Aishwarya Verma, COE%
+  \thanks{Roll No: \texttt{1024030170}, %
+    Email: \texttt{averma4\_be24@thapar.edu}}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Higher-order goal%
+  \BvrHint{\ldots secondary framing}}
+This project aims to improve the results of student employability by reducing the friction, guesswork, and
+fragmentation students face when preparing for campus placements. Although the underlying problem —
+career readiness — is broad, the immediate engineering objective is to translate that need into a
+measurable, deployable software platform that gives a student a single place to assess, improve and
+track their placement readiness, built around one coherent, fully working core rather than a wide but
+shallow feature set.
+
+\section{Time-to-value %
+\BvrHint{\ldots primary heuristic}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item We will deliver meaningful increments quickly by building the schema and authentication first, then one feature module at a time, validating each against seeded resume/job data before moving to the next.
+    \item We will prioritize fast feedback over breadth by using weekly iterations, with CI-backed tests required to pass after each module before the next module begins.
+    \item Success is defined by what can be delivered, tested, and demonstrated within the semester: a fully working resume-to-readiness pipeline, not a partially-implemented version of every feature imaginable
+    for the platform.
+\end{itemize}
+
+\section{Problem Statement}
+Final-year and pre-final-year students preparing for placements typically juggle disconnected resources: informal resume reviews, separate coding-practice sites, ad hoc or nonexistent interview practice, and no single view of how “placement-ready” they actually are. Common pain points include:
+
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Fragmentation:} Resume feedback, coding practice, aptitude prep, and interview practice live in separate, disconnected tools.
+    \item \textbf{No objective benchmark:} Students cannot easily tell how their resume or preparation compares against
+     what recruiters actually screen for.
+    \item \textbf{Delayed, generic feedback:} Resume and interview feedback, when available, is qualitative, inconsistent, and slow to arrive.
+    \item \textbf{Recruiter-side inefficiency:} Recruiters and campus placement cells manually screen large volumes of
+    resumes with limited tooling to filter or rank candidates.
+\end{itemize}
+
+\textbf{Why this matters now (contextual relevance):} With placement cycles compressed into a few weeks and many students competing for  a limited number of slots, even a modest reduction in feedback delay and an increase in the precision of self-assessment can  measurably improve how well-prepared a student is by the time they sit for an interview.
+
+\section{Proposed Solution %
+\BvrHint{\ldots Software Proposition}}
+\subsection{Overview}
+Build a \textbf{web-based} “SkillBridge” platform with the following components, each built completely rather
+than left partially implemented:
+
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Resume analyzer:} Parses PDF/DOCX resumes, extracts skills/education/projects/experience via NLP,computes an explainable ATS score, and flags missing keywords and weak sections.
+    \item \textbf{Skill-gap and roadmap engine:} Compares a student's profile against one of three predefined career tracks and generates a prioritized skill list, weekly study plan, and curated resource/certification suggestions.
+    \item \textbf{Coding assessment module:} A curated question bank (single language) with auto-evaluated submissions, hidden test cases, and a leaderboard.
+    \item \textbf{Placement Readiness Score:} A documented, weighted composite of resume, coding, aptitude, and mock-interview scores.
+    \item \textbf{Text-based AI mock interview:} A fixed technical question bank per track, with LLM-based rubric scoring of typed answers and a generated feedback report.
+    \item \textbf{Recruiter portal:} Job postings, candidate search/filtering, and AI-assisted candidate ranking using embedding similarity between job requirements and candidate profiles.
+    \item \textbf{Admin dashboard:} Platform-wide analytics (users, resumes, jobs, top skills) and basic content management.
+\end{itemize}
+
+\subsection{Core workflow}
+\begin{enumerate}[leftmargin=0.7cm]
+    \item Student registers, completes a profile, and uploads a resume.
+    \item System parses the resume, computes an ATS score, and surfaces missing keywords and weak sections.
+    \item Student attempts the coding assessment and, optionally, the mock interview; scores feed into a combined Placement Readiness Score.
+    \item Student selects a career track; the system generates a skill-gap report and roadmap.
+    \item Recruiters post jobs, search/filter the candidate pool, and view an AI-ranked shortlist.
+
+\end{enumerate}
+
+\subsection{Operational constraints for an educational, single semester setting}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Keep the solution usable on low-to-mid range devices via a responsive web frontend.
+    \item Favor well-understood, off-the-shelf NLP/ML components (spaCy, Sentence-Transformers) over building or training novel models from scratch.
+    \item Use an existing LLM API for interview-answer evaluation rather than building a custom evaluation model; the engineering contribution is in prompt/rubric design and structured-output handling, not model training..
+    \item Design for deployability using common web hosting, a managed relational database, and containerized deployment.
+    \item Explicitly exclude team-project matching, voice/video interviews, multi-language code execution, live external job-market data, salary-trend prediction, and calendar/scheduling integration from this semester's build — see Section 9.3 for the reasoning.
+\end{itemize}
+
+\section{Solution Approach %
+\BvrHint{\ldots Engineering focus}}
+This is an engineering course project, so the emphasis is on integrating mature, well-documented components into a coherent, correctly-functioning workflow, rather than on original ML research.
+
+\subsection{Resume parsing and ATS scoring %
+\BvrHint{\ldots non-research}}
+Duplicate detection will be heuristic-based:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Extract text from PDF/DOCX using established libraries (PyMuPDF, python-docx) rather than custom parsers. 
+    \item Use standard NLP techniques (spaCy for skill/entity extraction against a curated skills taxonomy, and Sentence-Transformer embeddings with cosine similarity for resume–job-description comparison) without claiming state-of-the-art novelty. 
+    \item Implement the ATS score as a documented, inspectable formula (keyword coverage, section completeness, formatting signals) rather than an opaque model, so the logic can be explained and defended. 
+    \item Present the ATS score and missing-keyword list as decision-support for the student; never silently reject a resume.
+\end{itemize}
+
+\subsection{Mock interview evaluation  %
+\BvrHint{\ldots LLM integration, not model-building}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Use a fixed, curated technical-question bank per career track; the student answers in text. 
+     \item Send the question, rubric, and student answer to an LLM API with a structured prompt, and parse the response into a technical-correctness score, a clarity score, and specific improvement tips. 
+     \item Store the transcript and scores for a per-attempt report, demonstrating structured LLM-API integration rather than a from-scratch conversational evaluation model.
+\end{itemize}
+
+\subsection{Web architecture  %
+\BvrHint{\ldots web-based solution}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Frontend:} responsive UI for students, recruiters, and admins (dashboards, upload forms, assessment views).
+    \item \textbf{Backend API:} authentication, resume/assessment endpoints, scoring logic, ranking endpoints.
+    \item \textbf{Database:} stores users, resumes, skills, assessments, jobs, applications, and analytics.
+
+\end{itemize}
+
+\subsection{CI/CD and fast delivery enabler}
+CI/CD will be used to:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Automatically build and run backend/ML unit tests on every change, including tests for the ATS scoring formula and the coding-assessment evaluator. 
+    \item Produce repeatable, containerized deployment artifacts to a staging environment.
+    \item Enable safe, frequent releases as each module (resume analyzer, assessments, roadmap, recruiter portal) is completed.
+\end{itemize}
+
+\section{Evaluation Criterion %
+\BvrHint{\ldots measurable and attributable}}
+We define success using measurable metrics tied to the core workflow.
+
+\subsection{Primary evaluation metric}
+\textbf{Time-to-feedback (TTF):} time between resume upload and the student receiving an ATS score and skill-gap report.
+\begin{itemize}[leftmargin=0.7cm]
+    \item Target: median TTF $\le$ 30 seconds during pilot testing.
+    \item Attribution:measured from server timestamps (upload event vs. report-generation event).
+\end{itemize}
+
+\subsection{Secondary evaluation metrics}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{ATS scoring consistency:} Variance in score for the same resume re-uploaded, used as a sanity check on scoring stability.
+    \item \textbf{Assessment completion rate:} percentage of registered students who complete the coding assessment.
+    \item \textbf{Ranking relevance:} for a sample of job postings, whether the top AI-ranked candidates match a manual reviewer's top picks (spot-checked, not a formal offline benchmark).
+    \item \textbf{User clarity:} student-reported clarity of feedback using a simple 1–5 survey question.
+    \item \textbf{Reliability:} availability of staging/production for login, upload, and assessment.
+\end{itemize}
+
+\subsection{Pilot validation plan %
+\BvrHint{\ldots high-level}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Recruit 15–25 pilot student users and 2–3 simulated recruiter accounts. 
+    \item Collect baseline expectations via a short pre-pilot survey (e.g., “how do you currently get resume feedback?”) and compare against in-app metrics after the pilot window.
+\end{itemize}
+
+\section{Scalability %
+\BvrHint{\ldots with foresight}}
+The proposition should scale in both theoretical and practical senses.
+
+\begin{enumerate}[leftmargin=0.7cm]
+    \item \textbf{Scalable (theoretically):} The system should support growth in resume volume, concurrent assessments, and recruiter search load by:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item decoupling frontend, backend API, and ML scoring services, 
+        \item enabling pagination and indexing for candidate search and analytics queries, 
+        \item using a stateless API design so scoring/embedding workers can be scaled horizontally.
+    \end{itemize}
+    
+    \item \textbf{Operationally deployable (practically):} The system should run on common web hosting:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item managed relational database (PostgreSQL), 
+        \item containerized deployment (Docker) for both the API and ML services, 
+        \item CI/CD pipeline for staging/production.
+    \end{itemize}
+   The architecture (single-language coding judge, curated question banks, three career tracks) is deliberately narrow for this semester, but each of these limits is a configuration/content boundary rather than a structural one — adding a language, a track, or a question is additive, not a rewrite. 
+   
+\end{enumerate}
+
+\section{Engine availability heuristic}
+A mature set of ``engines'' (tooling/services) is available to implement this as a web-based project:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Web framework for REST APIs (FastAPI) and a React/Tailwind frontend. 
+    \item Managed relational database (PostgreSQL). 
+    \item Token-based authentication (JWT) with role-based authorization for student/recruiter/admin roles. 
+    \item Established NLP libraries (spaCy, Sentence-Transformers) rather than custom-trained models. 
+    \item An existing LLM API (Anthropic/OpenAI) for mock-interview answer evaluation. 
+    \item Test framework for backend and ML-pipeline unit/integration tests. 
+    \item CI runner and staging deployment target (Docker, GitHub Actions). 
+\end{itemize}
+We will use these mature components to focus on workflow correctness, data modeling, and measurement, rather than inventing new ML infrastructure.
+
+\section{Project scope and deliverables %
+\BvrHint{\ldots iteration-friendly}}
+\subsection{Initial deliverable %
+\BvrHint{\ldots first iteration}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Database schema, migrations, and JWT authentication with role-based access.
+    \item  Upload of resume (PDF/DOCX), text extraction, skill extraction, and ATS score generation with missing-keyword report. 
+    \item Student dashboard showing resume score. • CI: build + backend unit tests + linting; CD to staging with a single pipeline job.
+\end{itemize}
+
+\subsection{Subsequent deliverables}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Coding assessment module (single language, curated question bank, auto-evaluation, leaderboard). 
+    \item Skill-gap analysis and career roadmap generator for three predefined career tracks. 
+    \item Placement Readiness Score combining resume, coding, aptitude, and interview scores. 
+    \item Text-based AI mock interview with LLM-based rubric scoring and a per-attempt report. 
+    \item Recruiter portal: job postings, candidate search/filter, and embedding-based candidate ranking. 
+    \item Admin dashboard: platform analytics and basic content management (CRUD on questions/jobs/users).
+\end{itemize}
+
+\section{Risks and Mitigations}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{ATS scoring accuracy:} heuristic/embedding-based scoring may not match every resume style; mitigate by testing against a varied seed dataset and treating scores as guidance, not a definitive judgment.
+    \item \textbf{LLM dependency for mock interviews:} API cost/latency/availability risk; mitigate by caching rubric prompts, capping attempts per student during the pilot, and handling API failures gracefully in the UI.
+    \item \textbf{Resume/data privacy:} minimize retained personal data, keep resume storage access-controlled, and only collect fields the platform actively uses
+    \item \textbf{Evaluation measurement ambiguity:} instrument timestamps and define scoring logic before development begins so metrics in Section 6 are attributable..
+    \item \textbf{Operational issues in pilot:} use staging early and ensure CI/CD produces repeatable deployments before onboarding pilot users.
+    \item \textbf{Timeline pressure:} The strict module ordering in Section 9.2 is to keep the plan achievable within one semester.
+\end{itemize}
+
+\section{Summary}
+This project proposes SkillBridge AI, a deployable web platform that helps students assess and improve their placement readiness through resume analysis, skill-gap detection, a coding assessment, a text-based AI mock interview, and readiness tracking, while giving recruiters a structured, AI-assisted way to discover suitable candidates. It meets the course criteria by emphasizing time-to-value through a strictly sequenced build, implementing CI/CD to support frequent safe releases, and using measurable evaluation criteria (especially time-to-feedback). It combines established NLP components (spaCy, Sentence-Transformers) with structured LLM-API integration rather than pursuing research-driven novelty, and explicitly excludes lower-value or disproportionately complex features (team matching, voice interviews, multi-language execution, live market data) so that the full scope in Section 9 is realistically achievable within a single semester.
+
+\end{document}
