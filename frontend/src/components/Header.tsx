@@ -1,75 +1,114 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Cpu, ShieldCheck, Sparkles, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import {
+  Cpu, Activity, LogOut, User, Menu, X,
+  LayoutDashboard, FileText, Target, Map,
+  Code2, Mic, Briefcase, ChevronDown
+} from 'lucide-react';
 
 export default function Header() {
-  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
+  const { user, logout } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  useEffect(() => {
-    fetch('http://localhost:8000/api/v1/health')
-      .then((res) => res.json())
-      .then((data) => setApiOnline(data.status === 'online'))
-      .catch(() => setApiOnline(false));
-  }, []);
+  const navLinks = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/resumes', label: 'Resumes', icon: FileText },
+    { href: '/skills', label: 'Skills', icon: Target },
+    { href: '/roadmap', label: 'Roadmap', icon: Map },
+    { href: '/assessments', label: 'Assessments', icon: Code2 },
+    { href: '/interviews', label: 'Interviews', icon: Mic },
+    { href: '/jobs', label: 'Jobs', icon: Briefcase },
+  ];
 
   return (
-    <header style={{
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
-      background: 'hsla(222, 47%, 7%, 0.85)',
-      backdropFilter: 'blur(16px)',
-      borderBottom: '1px solid var(--border-subtle)',
-      padding: '1rem 2rem',
-    }}>
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        {/* Brand Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: 'var(--radius-md)',
-            background: 'var(--gradient-primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: 'var(--shadow-glow)'
-          }}>
-            <Cpu size={24} color="#ffffff" />
+    <header className="app-header">
+      <div className="header-inner">
+        {/* Brand */}
+        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="brand-icon">
+            <Cpu size={22} color="#fff" />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            <h1 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
               SkillBridge <span className="gradient-text">AI</span>
             </h1>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-              University Enterprise Platform v1.0
-            </p>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>Career Intelligence Platform</p>
           </div>
-        </div>
+        </Link>
 
-        {/* Navigation Links */}
-        <nav style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <a href="#overview" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>Overview</a>
-          <a href="#modules" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>Core Modules</a>
-          <a href="#rag-audit" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>RAG Evaluator</a>
-          <a href="#docs" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>Architecture Docs</a>
-        </nav>
+        {/* Desktop Nav */}
+        {user && (
+          <nav className="desktop-nav">
+            {navLinks.map(link => (
+              <Link key={link.href} href={link.href} className="nav-link">
+                <link.icon size={15} />
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
-        {/* Live System Status Badge */}
+        {/* Right Section */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className={apiOnline ? "badge badge-success" : apiOnline === false ? "badge badge-warning" : "badge badge-primary"}>
-            <Activity size={14} />
-            {apiOnline === true ? "Backend Online (200 OK)" : apiOnline === false ? "Backend Standby" : "Connecting..."}
-          </div>
+          {user ? (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="profile-btn"
+              >
+                <div className="avatar-circle">
+                  {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <span className="profile-name">{user.full_name}</span>
+                <ChevronDown size={14} style={{ opacity: 0.6 }} />
+              </button>
+              {profileOpen && (
+                <div className="dropdown-menu">
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{user.full_name}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{user.email}</div>
+                    <div className="badge badge-primary" style={{ marginTop: '6px', fontSize: '0.7rem' }}>
+                      {user.role?.toUpperCase()}
+                    </div>
+                  </div>
+                  <button onClick={() => { logout(); setProfileOpen(false); }} className="dropdown-item danger">
+                    <LogOut size={14} /> Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Link href="/login" className="btn-ghost">Sign In</Link>
+              <Link href="/register" className="btn-primary-sm">Get Started</Link>
+            </div>
+          )}
+
+          {/* Mobile Toggle */}
+          {user && (
+            <button className="mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Mobile Nav */}
+      {mobileOpen && user && (
+        <nav className="mobile-nav">
+          {navLinks.map(link => (
+            <Link key={link.href} href={link.href} className="mobile-nav-link"
+              onClick={() => setMobileOpen(false)}>
+              <link.icon size={18} />
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

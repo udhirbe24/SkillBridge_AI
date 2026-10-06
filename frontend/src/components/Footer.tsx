@@ -1,74 +1,60 @@
+'use client';
+
 import React from 'react';
-import { ShieldCheck, Terminal, BookOpen } from 'lucide-react';
+import Link from 'next/link';
+import { Cpu, Github, ExternalLink } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer style={{
-      borderTop: '1px solid var(--border-subtle)',
-      background: 'hsl(222, 47%, 5%)',
-      padding: '3rem 2rem 2rem 2rem',
-      marginTop: '4rem',
-    }}>
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '2rem',
-        marginBottom: '2rem',
-      }}>
-        <div>
-          <h3 style={{ fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '1rem' }}>
-            SkillBridge AI — Academic Project
-          </h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
-            Built as an enterprise-grade Software Engineering submission. Fully compliant with IEEE 830 standards, RAG Triad evaluation metrics, and OWASP Top 10 security guardrails.
-          </p>
-        </div>
+    <footer className="app-footer">
+      <div className="footer-inner">
+        <div className="footer-grid">
+          {/* Brand */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <div className="brand-icon" style={{ width: '32px', height: '32px' }}>
+                <Cpu size={18} color="#fff" />
+              </div>
+              <span style={{ fontWeight: 700, fontSize: '1rem' }}>
+                SkillBridge <span className="gradient-text">AI</span>
+              </span>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.6, maxWidth: '280px' }}>
+              AI-powered career intelligence bridging university education and industry demands.
+            </p>
+          </div>
 
-        <div>
-          <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Architecture Specs
-          </h4>
-          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            <li style={{ marginBottom: '0.5rem' }}>• FastAPI Python Engine</li>
-            <li style={{ marginBottom: '0.5rem' }}>• Next.js 14 App Router</li>
-            <li style={{ marginBottom: '0.5rem' }}>• Qdrant Hybrid Vector Search</li>
-            <li style={{ marginBottom: '0.5rem' }}>• PostgreSQL 16 Data Store</li>
-          </ul>
-        </div>
+          {/* Platform */}
+          <div>
+            <h4 className="footer-heading">Platform</h4>
+            <Link href="/dashboard" className="footer-link">Dashboard</Link>
+            <Link href="/resumes" className="footer-link">Resume Analysis</Link>
+            <Link href="/skills" className="footer-link">Skill Gap Engine</Link>
+            <Link href="/roadmap" className="footer-link">Career Roadmap</Link>
+          </div>
 
-        <div>
-          <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Evaluation Standards
-          </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldCheck size={16} /> Faithfulness Score: &gt;0.90
-            </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Terminal size={16} /> Grounded Context: Hybrid BM25+Dense
-            </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--accent-violet)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <BookOpen size={16} /> IEEE 830 Standard SRS
-            </span>
+          {/* Features */}
+          <div>
+            <h4 className="footer-heading">Features</h4>
+            <Link href="/assessments" className="footer-link">Coding Assessments</Link>
+            <Link href="/interviews" className="footer-link">Mock Interviews</Link>
+            <Link href="/jobs" className="footer-link">Job Matching</Link>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="footer-heading">Resources</h4>
+            <a href="https://github.com/udhirbe24/SkillBridge_AI" target="_blank" rel="noopener noreferrer" className="footer-link">
+              <Github size={13} /> GitHub <ExternalLink size={10} style={{ opacity: 0.5 }} />
+            </a>
+            <a href="/docs" className="footer-link">API Documentation</a>
           </div>
         </div>
-      </div>
 
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        paddingTop: '1.5rem',
-        borderTop: '1px solid hsla(217, 33%, 20%, 0.5)',
-        display: 'flex',
-        justify: 'space-between',
-        alignItems: 'center',
-        fontSize: '0.8rem',
-        color: 'var(--text-muted)',
-      }}>
-        <p>© 2026 SkillBridge AI Platform. All Rights Reserved.</p>
-        <p>Software Engineering Capstone Evaluation Package</p>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} SkillBridge AI. Built with FastAPI + Next.js 14.</span>
+          <span style={{ color: 'var(--text-muted)' }}>University Capstone Project</span>
+        </div>
       </div>
     </footer>
   );
