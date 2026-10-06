@@ -22,7 +22,7 @@ export default function RegisterPage() {
     if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
     setLoading(true);
     try {
-      await register(email, password, fullName, role);
+      await register(email, password, fullName, role.toUpperCase());
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Registration failed');

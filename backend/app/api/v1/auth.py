@@ -52,18 +52,12 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
         db.add(student_profile)
 
     elif user_in.role == UserRole.RECRUITER:
-        if not user_in.recruiter_profile:
-            db.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Recruiter profile details (company_name) are required for RECRUITER registration."
-            )
-        recruiter_data = user_in.recruiter_profile.model_dump()
+        recruiter_data = user_in.recruiter_profile.model_dump() if user_in.recruiter_profile else {}
         recruiter_profile = RecruiterProfile(
             user_id=user.id,
-            company_name=recruiter_data.get("company_name"),
-            company_website=recruiter_data.get("company_website"),
-            industry=recruiter_data.get("industry")
+            company_name=recruiter_data.get("company_name", "SkillBridge Partner Company"),
+            company_website=recruiter_data.get("company_website", "https://example.com"),
+            industry=recruiter_data.get("industry", "Technology")
         )
         db.add(recruiter_profile)
 

@@ -16,7 +16,13 @@ async function apiFetch<T = any>(endpoint: string, options: FetchOptions = {}): 
   const res = await fetch(`${API_BASE}${endpoint}`, { headers, ...rest });
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(error.detail || `API Error: ${res.status}`);
+    let msg = error.detail;
+    if (Array.isArray(msg)) {
+      msg = msg.map((item: any) => item.msg || JSON.stringify(item)).join(', ');
+    } else if (typeof msg === 'object' && msg !== null) {
+      msg = JSON.stringify(msg);
+    }
+    throw new Error(msg || `API Error: ${res.status}`);
   }
   return res.json();
 }
