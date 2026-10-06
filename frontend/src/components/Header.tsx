@@ -6,7 +6,8 @@ import { useAuth } from '@/context/AuthContext';
 import {
   Cpu, Activity, LogOut, User, Menu, X,
   LayoutDashboard, FileText, Target, Map,
-  Code2, Mic, Briefcase, ChevronDown
+  Code2, Mic, Briefcase, ChevronDown,
+  Users as UsersIcon, Shield, ShieldCheck
 } from 'lucide-react';
 
 export default function Header() {
@@ -14,16 +15,38 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const navLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/resumes', label: 'Resumes', icon: FileText },
-    { href: '/skills', label: 'Skills', icon: Target },
-    { href: '/roadmap', label: 'Roadmap', icon: Map },
-    { href: '/assessments', label: 'Assessments', icon: Code2 },
-    { href: '/interviews', label: 'Interviews', icon: Mic },
-    { href: '/jobs', label: 'Jobs', icon: Briefcase },
-    { href: '/analytics', label: 'Analytics', icon: LayoutDashboard },
-  ];
+  const roleUpper = user?.role?.toUpperCase();
+
+  const getNavLinks = () => {
+    if (roleUpper === 'RECRUITER') {
+      return [
+        { href: '/recruiter', label: 'Candidate Search', icon: UsersIcon },
+        { href: '/jobs', label: 'Job Postings', icon: Briefcase },
+        { href: '/security', label: 'Security Audit', icon: Shield },
+      ];
+    }
+    if (roleUpper === 'ADMIN') {
+      return [
+        { href: '/admin', label: 'Admin Control', icon: ShieldCheck },
+        { href: '/recruiter', label: 'Recruiter Portal', icon: UsersIcon },
+        { href: '/assessments', label: 'Assessments', icon: Code2 },
+        { href: '/security', label: 'Security Audit', icon: Shield },
+      ];
+    }
+    // Default: STUDENT
+    return [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/resumes', label: 'Resumes', icon: FileText },
+      { href: '/skills', label: 'Skills', icon: Target },
+      { href: '/roadmap', label: 'Roadmap', icon: Map },
+      { href: '/assessments', label: 'Assessments', icon: Code2 },
+      { href: '/interviews', label: 'Interviews', icon: Mic },
+      { href: '/jobs', label: 'Jobs', icon: Briefcase },
+      { href: '/security', label: 'Security', icon: Shield },
+    ];
+  };
+
+  const navLinks = getNavLinks();
 
   return (
     <header className="app-header">

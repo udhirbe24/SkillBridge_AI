@@ -15,8 +15,8 @@ interface AuthContextType {
   token: string | null;
   refreshToken: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, fullName: string, role?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
+  register: (email: string, password: string, fullName: string, role?: string) => Promise<any>;
   logout: () => void;
 }
 
@@ -48,9 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('sb_token', data.access_token);
     localStorage.setItem('sb_refresh', data.refresh_token);
     localStorage.setItem('sb_user', JSON.stringify(data.user));
+    return data.user;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, fullName: string, role = 'student') => {
+  const register = useCallback(async (email: string, password: string, fullName: string, role = 'STUDENT') => {
     const data = await authAPI.register({ email, password, full_name: fullName, role });
     setToken(data.access_token);
     setRefreshTokenVal(data.refresh_token);
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('sb_token', data.access_token);
     localStorage.setItem('sb_refresh', data.refresh_token);
     localStorage.setItem('sb_user', JSON.stringify(data.user));
+    return data.user;
   }, []);
 
   const logout = useCallback(() => {

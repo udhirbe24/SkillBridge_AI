@@ -22,8 +22,11 @@ export default function RegisterPage() {
     if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
     setLoading(true);
     try {
-      await register(email, password, fullName, role.toUpperCase());
-      router.push('/dashboard');
+      const u = await register(email, password, fullName, role.toUpperCase());
+      const r = u?.role?.toUpperCase();
+      if (r === 'RECRUITER') router.push('/recruiter');
+      else if (r === 'ADMIN') router.push('/admin');
+      else router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Registration failed');
     } finally {

@@ -19,8 +19,11 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
-      router.push('/dashboard');
+      const u = await login(email, password);
+      const r = u?.role?.toUpperCase();
+      if (r === 'RECRUITER') router.push('/recruiter');
+      else if (r === 'ADMIN') router.push('/admin');
+      else router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Invalid credentials');
     } finally {
