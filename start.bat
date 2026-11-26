@@ -5,13 +5,13 @@ echo           Starting SkillBridge AI Platform
 echo ===================================================
 
 echo [1/3] Starting Backend Engine (FastAPI on port 8000)...
-start "SkillBridge Backend (Port 8000)" cmd /k "cd /d %~dp0backend && python -m uvicorn app.main:app --reload --port 8000"
+start "SkillBridge Backend (Port 8000)" cmd /k "cd /d ""%~dp0backend"" && python -m uvicorn app.main:app --reload --port 8000"
 
 echo [2/3] Starting Frontend Interface (Next.js on port 3000)...
-start "SkillBridge Frontend (Port 3000)" cmd /k "cd /d %~dp0frontend && npm.cmd run dev"
+start "SkillBridge Frontend (Port 3000)" cmd /k "cd /d ""%~dp0frontend"" && npm.cmd run dev"
 
-echo [3/3] Waiting 4 seconds for servers to initialize...
-timeout /t 4 /nobreak >nul
+echo [3/3] Waiting 5 seconds for servers to initialize...
+timeout /t 5 /nobreak >nul
 
 echo Opening browser to http://localhost:3000 ...
 start http://localhost:3000
