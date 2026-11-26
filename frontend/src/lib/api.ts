@@ -41,19 +41,36 @@ export const authAPI = {
 
 // Resumes
 export const resumeAPI = {
-  upload: (file: File, token: string) => {
+  upload: async (file: File, token: string) => {
     const formData = new FormData();
     formData.append('file', file);
-    return fetch(`${API_BASE}/resumes/upload`, {
+    const res = await fetch(`${API_BASE}/resumes/upload`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
-    }).then(r => r.json());
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ detail: res.statusText }));
+      let msg = error.detail;
+      if (Array.isArray(msg)) {
+        msg = msg.map((item: any) => item.msg || JSON.stringify(item)).join(', ');
+      } else if (typeof msg === 'object' && msg !== null) {
+        msg = JSON.stringify(msg);
+      }
+      throw new Error(msg || `Upload failed: ${res.status}`);
+    }
+    return res.json();
   },
   list: (token: string) =>
     apiFetch('/resumes/', { token }),
   get: (id: string, token: string) =>
     apiFetch(`/resumes/${id}`, { token }),
+  matchJD: (job_description: string, token: string) =>
+    apiFetch('/resumes/match-jd', {
+      method: 'POST',
+      body: JSON.stringify({ job_description }),
+      token
+    }),
 };
 
 // Skills
@@ -94,11 +111,21 @@ export const assessmentAPI = {
 
 // Interviews
 export const interviewAPI = {
-  start: (data: { role: string; difficulty: string }, token: string) =>
-    apiFetch('/interviews/start', { method: 'POST', body: JSON.stringify(data), token }),
+  start: (data: { role?: string; target_role?: string; difficulty: string; total_questions?: number }, token: string) =>
+    apiFetch('/interviews/start', {
+      method: 'POST',
+      body: JSON.stringify({
+        target_role: data.target_role || data.role || 'Backend Engineer',
+        difficulty: data.difficulty || 'medium',
+        total_questions: data.total_questions || 3
+      }),
+      token
+    }),
   respond: (sessionId: string, answer: string, token: string) =>
     apiFetch(`/interviews/${sessionId}/respond`, {
-      method: 'POST', body: JSON.stringify({ answer }), token
+      method: 'POST',
+      body: JSON.stringify({ response_text: answer }),
+      token
     }),
   end: (sessionId: string, token: string) =>
     apiFetch(`/interviews/${sessionId}/end`, { method: 'POST', token }),

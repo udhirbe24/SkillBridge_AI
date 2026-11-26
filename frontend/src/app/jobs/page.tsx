@@ -28,7 +28,19 @@ export default function JobsPage() {
         jobsAPI.recommendations(token).catch(() => []),
         jobsAPI.list(token).catch(() => []),
       ]).then(([recs, all]) => {
-        setRecommendations(Array.isArray(recs) ? recs : recs?.recommendations || []);
+        const rawRecs = Array.isArray(recs) ? recs : recs?.recommendations || [];
+        const normalizedRecs = rawRecs.map((item: any) => {
+          if (item && item.job) {
+            return {
+              ...item.job,
+              match_score: item.match_score,
+              explanation: item.explanation,
+              match_breakdown: item.explanation
+            };
+          }
+          return item;
+        });
+        setRecommendations(normalizedRecs);
         setJobs(Array.isArray(all) ? all : all?.jobs || []);
       }).finally(() => setLoadingData(false));
     }

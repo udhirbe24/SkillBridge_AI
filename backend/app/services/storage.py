@@ -45,4 +45,4 @@ def validate_and_save_resume_file(file: UploadFile, user_id: str) -> tuple[str, 
 
     # Reset file cursor position
     file.file.seek(0)
-    return str(file_path), file_size
+    return file_path.as_posix(), file_size

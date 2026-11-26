@@ -18,6 +18,7 @@ from app.api.v1.auth import get_current_active_user
 router = APIRouter(prefix="/assessments", tags=["Coding Assessments & Evaluation"])
 
 @router.get("", response_model=List[AssessmentQuestionListItem])
+@router.get("/", response_model=List[AssessmentQuestionListItem])
 def list_assessment_questions(
     difficulty: Optional[str] = Query(None, description="Filter by difficulty: easy, medium, hard"),
     category: Optional[str] = Query(None, description="Filter by category"),

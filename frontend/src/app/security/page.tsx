@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
   Shield, CheckCircle2, Lock, Eye, Server, Globe,
   AlertTriangle, FileText, Database, Key, Fingerprint,
-  ShieldCheck, ShieldAlert, Cpu, Layers, Activity
+  ShieldCheck, ShieldAlert, Cpu, Layers, Activity, Users
 } from 'lucide-react';
 
 interface AuditItem {
@@ -130,9 +130,4 @@ export default function SecurityPage() {
       {renderAuditSection('Data Protection & Input Validation', dataSecurity, Database, 'var(--accent-emerald)')}
     </div>
   );
-}
-
-// Missing import for Users icon used in authSecurity
-function Users(props: any) {
-  return <svg xmlns="http://www.w3.org/2000/svg" width={props.size || 24} height={props.size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
 }

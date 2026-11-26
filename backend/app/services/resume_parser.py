@@ -67,33 +67,6 @@ STANDARD_SECTIONS = {
     "Certifications": ["certifications", "licenses", "certificates", "courses"]
 }
 
-def extract_text_from_pdf(file_path: str) -> str:
-    """
-    Extracts raw text content from PDF file using pdfplumber or pypdf/fitz.
-    Falls back to regex-based text extraction if pdfplumber is unavailable.
-    """
-    text = ""
-    try:
-        import pdfplumber
-        with pdfplumber.open(file_path) as pdf:
-            for page in pdf.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text += page_text + "\n"
-    except ImportError:
-        try:
-            from pypdf import PdfReader
-            reader = PdfReader(file_path)
-            for page in reader.pages:
-                text += page.extract_text() or "" + "\n"
-        except Exception:
-            # Basic fallback for test synthetic PDFs
-            with open(file_path, "rb") as f:
-                content = f.read().decode("latin-1", errors="ignore")
-                text = content
-
-    return text.strip()
-
 def analyze_sections_and_bullet_points(raw_text: str) -> Dict[str, Any]:
     """
     Detects missing standard sections and weak bullet points without quantifiable numbers or action verbs.
@@ -118,7 +91,7 @@ def analyze_sections_and_bullet_points(raw_text: str) -> Dict[str, Any]:
 
     for line in bullet_lines:
         line_lower = line.lower()
-        has_number = bool(re.search(r'\d+%|\d+\+|$\d+|\d+k', line_lower))
+        has_number = bool(re.search(r'\d+%|\d+\+|\$\d+|\d+k', line_lower))
         has_verb = any(verb in line_lower for verb in ACTION_VERBS)
 
         if has_number:

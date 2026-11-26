@@ -30,7 +30,13 @@ export default function SkillsPage() {
 
   useEffect(() => {
     if (token) {
-      skillsAPI.benchmarks(token).then(setBenchmarks).catch(() => {});
+      skillsAPI.benchmarks(token).then(data => {
+        const list = Array.isArray(data) ? data : [];
+        setBenchmarks(list);
+        if (list.length > 0 && !targetRole) {
+          setTargetRole(list[0].role_name);
+        }
+      }).catch(() => {});
     }
   }, [token]);
 
@@ -46,6 +52,8 @@ export default function SkillsPage() {
   }
 
   if (isLoading || !user) return <div className="loading-page"><div className="spinner" /><span>Loading...</span></div>;
+
+  const availableRoles = benchmarks.length > 0 ? benchmarks.map(b => b.role_name) : TARGET_ROLES;
 
   return (
     <div className="page-container animate-in">
@@ -74,7 +82,7 @@ export default function SkillsPage() {
           <div className="glass-panel-static" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
             <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Select Target Role</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1.25rem' }}>
-              {TARGET_ROLES.map(role => (
+              {availableRoles.map(role => (
                 <button key={role} onClick={() => setTargetRole(role)}
                   style={{
                     padding: '8px 16px', borderRadius: 'var(--radius-full)',

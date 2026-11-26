@@ -36,6 +36,7 @@ export default function Header() {
     // Default: STUDENT
     return [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/analytics', label: 'Analytics', icon: Activity },
       { href: '/resumes', label: 'Resumes', icon: FileText },
       { href: '/skills', label: 'Skills', icon: Target },
       { href: '/roadmap', label: 'Roadmap', icon: Map },

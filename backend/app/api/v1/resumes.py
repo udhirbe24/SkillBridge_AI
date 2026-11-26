@@ -66,6 +66,21 @@ def upload_resume(
     db.refresh(resume_doc)
     return resume_doc
 
+@router.get("", response_model=List[ResumeDocumentResponse])
+@router.get("/", response_model=List[ResumeDocumentResponse])
+def list_my_resumes(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieves all uploaded resume documents for the current authenticated user.
+    """
+    resumes = db.query(ResumeDocument)\
+        .filter(ResumeDocument.user_id == current_user.id)\
+        .order_by(ResumeDocument.created_at.desc())\
+        .all()
+    return resumes
+
 @router.get("/me", response_model=ResumeDocumentResponse)
 def get_my_resume(
     current_user: User = Depends(get_current_active_user),

@@ -86,3 +86,36 @@ def test_get_my_resume():
     data = res.json()
     assert data["filename"] == "test_resume.pdf"
     assert data["parsed_data"]["total_skills_count"] >= 5
+
+def test_list_my_resumes():
+    login_res = client.post("/api/v1/auth/login", json={
+        "email": "resume.student@university.edu",
+        "password": "Password123!"
+    })
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    res = client.get("/api/v1/resumes/", headers=headers)
+    assert res.status_code == 200
+    data = res.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+    assert data[0]["filename"] == "test_resume.pdf"
+
+def test_match_resume_with_jd():
+    login_res = client.post("/api/v1/auth/login", json={
+        "email": "resume.student@university.edu",
+        "password": "Password123!"
+    })
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    jd_payload = {
+        "job_description": "We are seeking a Python and FastAPI engineer experienced with React and Docker."
+    }
+    res = client.post("/api/v1/resumes/match-jd", json=jd_payload, headers=headers)
+    assert res.status_code == 200
+    data = res.json()
+    assert "similarity_score" in data
+    assert "matched_skills" in data
+    assert "Python" in data["matched_skills"]

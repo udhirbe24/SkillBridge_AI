@@ -8,7 +8,9 @@ from app.api.v1.auth import get_current_active_user
 
 router = APIRouter(prefix="/dashboard", tags=["Analytics Dashboard & Career Readiness Engine"])
 
+@router.get("/stats")
 @router.get("", response_model=DashboardSummaryResponse)
+@router.get("/", response_model=DashboardSummaryResponse)
 def get_dashboard_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
@@ -17,7 +19,7 @@ def get_dashboard_summary(
     Retrieves full career intelligence dashboard metrics, readiness score breakdown, and recommended next action.
     """
     data = compute_career_readiness(db, current_user)
-    return DashboardSummaryResponse(**data)
+    return data
 
 @router.get("/readiness", response_model=ReadinessBreakdown)
 def get_readiness_score_breakdown(

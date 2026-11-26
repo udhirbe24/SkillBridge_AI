@@ -89,6 +89,7 @@ def get_audit_logs(
         for l in logs
     ]
 
+@router.get("/system-stats", response_model=SystemStatsResponse)
 @router.get("/stats", response_model=SystemStatsResponse)
 def get_system_stats(
     current_user: User = Depends(RoleChecker([UserRole.ADMIN])),

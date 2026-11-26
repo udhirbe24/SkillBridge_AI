@@ -36,6 +36,7 @@ def serialize_job(job: JobPosting) -> JobResponse:
     )
 
 @router.get("", response_model=List[JobResponse])
+@router.get("/", response_model=List[JobResponse])
 def list_jobs(
     search: Optional[str] = Query(None, description="Search by title or company"),
     location: Optional[str] = Query(None, description="Filter by location"),

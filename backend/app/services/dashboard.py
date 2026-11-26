@@ -6,6 +6,7 @@ from app.models.skills import SkillGapAnalysis
 from app.models.roadmap import CareerRoadmap, RoadmapItem
 from app.models.assessment import AssessmentSubmission
 from app.models.interview import InterviewSession
+from app.models.job import JobPosting
 
 def compute_career_readiness(db: Session, user: User) -> Dict[str, Any]:
     """
@@ -125,6 +126,26 @@ def compute_career_readiness(db: Session, user: User) -> Dict[str, Any]:
     ]
 
 
+    # Detailed counts and averages for rich analytics
+    resumes_count = db.query(ResumeDocument).filter(ResumeDocument.user_id == user.id).count()
+    assessments_count = len(submissions)
+    interviews_count = len(interviews)
+    user_roadmaps = db.query(CareerRoadmap).filter(CareerRoadmap.user_id == user.id).all()
+    roadmap_items_count = sum(len(r.items) for r in user_roadmaps)
+    jobs_count = db.query(JobPosting).filter(JobPosting.is_active == True).count()
+
+    recommendations_list = []
+    if resume_score < 70:
+        recommendations_list.append("Upload or update your resume for ATS scoring & skill extraction.")
+    if skill_gap_score < 70:
+        recommendations_list.append(f"Run skill gap analysis for '{target_role}' to benchmark required skills.")
+    if assessments_count < 2:
+        recommendations_list.append("Attempt coding assessments to build technical benchmarking score.")
+    if interviews_count == 0:
+        recommendations_list.append("Practice an AI mock interview session with real-time feedback.")
+    if not recommendations_list:
+        recommendations_list.append("Your profile is strong! Explore top job matches and apply.")
+
     return {
         "user_id": user.id,
         "full_name": user.full_name,
@@ -136,7 +157,21 @@ def compute_career_readiness(db: Session, user: User) -> Dict[str, Any]:
             "assessment_score": assessment_score,
             "interview_score": interview_score
         },
+        "skill_coverage": skill_gap_score,
+        "skill_gap_score": skill_gap_score,
+        "coding_avg": assessment_score,
+        "assessment_score": assessment_score,
+        "interview_avg": interview_score,
+        "interview_score": interview_score,
+        "resume_score": resume_score,
         "acquired_skills_count": acquired_skills_count,
+        "skills_count": acquired_skills_count,
+        "resumes_count": resumes_count,
+        "assessments_count": assessments_count,
+        "interviews_count": interviews_count,
+        "roadmap_items": roadmap_items_count,
+        "jobs_matched": jobs_count,
+        "recommendations": recommendations_list,
         "roadmap_completion_rate": completion_rate,
         "next_action": next_action,
         "recent_activity": recent_activity

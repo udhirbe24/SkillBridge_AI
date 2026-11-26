@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const SERVER_BASE = API_BASE.replace(/\/api\/v1\/?$/, '');
 
 export default function RecruiterPage() {
   const { user, token, isLoading } = useAuth();
@@ -367,7 +368,7 @@ export default function RecruiterPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span className="badge badge-primary"><Star size={12} /> Shortlisted</span>
                       {candidate.student_profile?.resume_url && (
-                        <a href={`http://localhost:8000/${candidate.student_profile.resume_url}`} target="_blank" rel="noreferrer" className="btn-secondary btn-sm">
+                        <a href={`${SERVER_BASE}/${candidate.student_profile.resume_url}`} target="_blank" rel="noreferrer" className="btn-secondary btn-sm">
                           <Download size={14} /> Resume PDF
                         </a>
                       )}

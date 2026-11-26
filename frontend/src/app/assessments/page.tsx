@@ -24,10 +24,27 @@ export default function AssessmentsPage() {
   useEffect(() => {
     if (token) {
       assessmentAPI.list(token).then(data => {
-        setAssessments(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+        setAssessments(list);
+        if (list.length > 0 && !selected) {
+          handleSelect(list[0]);
+        }
       }).catch(() => {}).finally(() => setLoadingList(false));
     }
   }, [token]);
+
+  async function handleSelect(a: any) {
+    setSelected(a);
+    setResult(null);
+    if (!token) return;
+    try {
+      const detail = await assessmentAPI.get(a.id, token);
+      setSelected(detail);
+      setCode(detail.starter_code || '');
+    } catch {
+      setCode(a.starter_code || '');
+    }
+  }
 
   async function handleSubmit() {
     if (!selected || !token || !code.trim()) return;
@@ -70,7 +87,7 @@ export default function AssessmentsPage() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {assessments.map((a: any, i: number) => (
-                <div key={a.id || i} onClick={() => { setSelected(a); setCode(''); setResult(null); }}
+                <div key={a.id || i} onClick={() => handleSelect(a)}
                   className="glass-panel" style={{
                     padding: '1rem', cursor: 'pointer',
                     borderColor: selected?.id === a.id ? 'var(--accent-emerald)' : undefined

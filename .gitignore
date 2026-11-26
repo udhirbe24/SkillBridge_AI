@@ -59,5 +59,6 @@ Thumbs.db
 
 # Local uploaded files & SQLite databases
 backend/storage/
+storage/
 *.db
 *.sqlite3

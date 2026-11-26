@@ -92,6 +92,8 @@ def start_interview_session(
     db.refresh(session)
     return serialize_session(session)
 
+@router.get("/history", response_model=List[InterviewSessionResponse])
+@router.get("", response_model=List[InterviewSessionResponse])
 @router.get("/", response_model=List[InterviewSessionResponse])
 def list_user_interviews(
     db: Session = Depends(get_db),
@@ -250,6 +252,7 @@ def respond_to_question(
         summary_feedback=summary_feedback
     )
 
+@router.post("/{session_id}/end", response_model=InterviewSessionResponse)
 @router.post("/{session_id}/complete", response_model=InterviewSessionResponse)
 def complete_interview_session(
     session_id: str,

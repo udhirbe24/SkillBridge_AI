@@ -82,3 +82,12 @@ def test_run_skill_gap_analysis_full_match():
     readiness_res = client.get("/api/v1/skills/readiness", headers=headers)
     assert readiness_res.status_code == 200
     assert readiness_res.json()["readiness_score"] == 100.0
+
+    # 5. Check /analyze and /my-skills endpoints used by frontend
+    analyze_res = client.post("/api/v1/skills/analyze", json={"target_role": "Full Stack Developer"}, headers=headers)
+    assert analyze_res.status_code == 201
+    assert analyze_res.json()["readiness_score"] == 100.0
+
+    my_skills_res = client.get("/api/v1/skills/my-skills", headers=headers)
+    assert my_skills_res.status_code == 200
+    assert my_skills_res.json()["readiness_score"] == 100.0

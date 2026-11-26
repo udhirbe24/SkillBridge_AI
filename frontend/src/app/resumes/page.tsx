@@ -35,17 +35,9 @@ export default function ResumesPage() {
   async function handleMatchJD() {
     if (!token || !jobDescription.trim()) return;
     setMatchingJD(true);
+    setError('');
     try {
-      const res = await fetch('http://localhost:8000/api/v1/resumes/match-jd', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ job_description: jobDescription })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'JD matching failed');
+      const data = await resumeAPI.matchJD(jobDescription, token);
       setJdMatchResult(data);
     } catch (err: any) {
       setError(err.message || 'JD matching failed');

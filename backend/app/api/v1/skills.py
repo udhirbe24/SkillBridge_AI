@@ -7,7 +7,7 @@ from app.models.user import User, StudentProfile, AuditLog
 from app.models.skills import RoleBenchmark, SkillGapAnalysis
 from app.schemas.skills import RoleBenchmarkResponse, SkillGapRequest, SkillGapResponse, ReadinessSummaryResponse
 from app.api.deps import get_current_active_user
-from app.services.skill_engine import seed_role_benchmarks_if_empty, calculate_skill_gap
+from app.services.skill_engine import seed_role_benchmarks_if_empty, calculate_skill_gap, find_role_benchmark
 
 router = APIRouter(prefix="/skills", tags=["Skill Gap Engine & Readiness Score"])
 
@@ -21,6 +21,7 @@ def get_role_benchmarks(db: Session = Depends(get_db)):
     benchmarks = db.query(RoleBenchmark).all()
     return benchmarks
 
+@router.post("/analyze", response_model=SkillGapResponse, status_code=status.HTTP_201_CREATED)
 @router.post("/gap-analysis", response_model=SkillGapResponse, status_code=status.HTTP_201_CREATED)
 def run_skill_gap_analysis(
     request: SkillGapRequest,
@@ -31,12 +32,7 @@ def run_skill_gap_analysis(
     Runs Skill Gap Engine analyzing student's acquired skills against target role benchmarks.
     Persists analysis record and updates StudentProfile readiness score.
     """
-    seed_role_benchmarks_if_empty(db)
-
-    # Fetch benchmark for target role
-    benchmark = db.query(RoleBenchmark).filter(
-        RoleBenchmark.role_name.ilike(request.target_role)
-    ).first()
+    benchmark = find_role_benchmark(db, request.target_role)
 
     if not benchmark:
         raise HTTPException(
@@ -85,6 +81,7 @@ def run_skill_gap_analysis(
     db.refresh(analysis)
     return analysis
 
+@router.get("/my-skills", response_model=ReadinessSummaryResponse)
 @router.get("/readiness", response_model=ReadinessSummaryResponse)
 def get_readiness_score(
     current_user: User = Depends(get_current_active_user),

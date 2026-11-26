@@ -58,3 +58,13 @@ def test_dashboard_summary_and_readiness_flow():
     action_res = client.get("/api/v1/dashboard/next-action", headers=headers)
     assert action_res.status_code == 200
     assert "title" in action_res.json()
+
+    # 8. Fetch /dashboard/stats used by frontend
+    stats_res = client.get("/api/v1/dashboard/stats", headers=headers)
+    assert stats_res.status_code == 200
+    stats = stats_res.json()
+    assert "career_readiness_score" in stats
+    assert "skill_coverage" in stats
+    assert "coding_avg" in stats
+    assert "assessments_count" in stats
+    assert stats["assessments_count"] >= 1

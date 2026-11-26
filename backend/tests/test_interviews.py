@@ -84,6 +84,11 @@ def test_mock_interview_full_flow():
     assert len(history) >= 1
     assert history[0]["status"] == "completed"
 
+    # Also test /history endpoint used by frontend
+    history_alias_res = client.get("/api/v1/interviews/history", headers=headers)
+    assert history_alias_res.status_code == 200
+    assert len(history_alias_res.json()) >= 1
+
     # 9. Check analytics
     analytics_res = client.get("/api/v1/interviews/analytics", headers=headers)
     assert analytics_res.status_code == 200

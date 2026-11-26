@@ -1,5 +1,7 @@
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.middleware import SecurityHeadersAndRateLimitMiddleware
@@ -41,6 +43,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# Mount storage directory for static resume viewing
+storage_path = Path("storage")
+storage_path.mkdir(parents=True, exist_ok=True)
+app.mount("/storage", StaticFiles(directory=str(storage_path)), name="storage")
 
 # Include API v1 Routers
 app.include_router(health_router, prefix=settings.API_V1_STR)

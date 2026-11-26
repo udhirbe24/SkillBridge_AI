@@ -44,9 +44,10 @@ export default function InterviewsPage() {
     try {
       const res = await interviewAPI.start({ role, difficulty }, token);
       setSession(res);
+      const firstQ = res.exchanges?.[0]?.question_text || res.question || res.current_question || `Welcome! Let's begin your ${role} mock interview.`;
       setMessages([{
         role: 'ai',
-        content: res.question || res.current_question || `Welcome! Let's begin your ${role} mock interview. ${res.questions?.[0] || 'Tell me about yourself and your experience.'}`
+        content: firstQ
       }]);
       setSummary(null);
     } catch (err) { console.error(err); }
@@ -60,13 +61,31 @@ export default function InterviewsPage() {
     setAnswer(''); setLoading(true);
     try {
       const res = await interviewAPI.respond(session.session_id || session.id, currentAnswer, token);
-      if (res.next_question || res.question) {
-        setMessages(prev => [...prev, {
-          role: 'ai',
-          content: res.feedback ? `**Feedback:** ${res.feedback}\n\n**Next Question:** ${res.next_question || res.question}` : (res.next_question || res.question)
-        }]);
-      } else if (res.feedback) {
-        setMessages(prev => [...prev, { role: 'ai', content: `**Feedback:** ${res.feedback}` }]);
+      const feedbackText = res.current_exchange?.feedback || res.feedback || '';
+      const nextQText = res.next_question?.question_text || (typeof res.next_question === 'string' ? res.next_question : null);
+      
+      let aiContent = '';
+      if (feedbackText) {
+        aiContent += `**Feedback:** ${feedbackText}\n\n`;
+      }
+      if (nextQText) {
+        aiContent += `**Next Question:** ${nextQText}`;
+      } else if (res.is_completed) {
+        aiContent += `🎉 **Session Completed!** Your overall interview score is **${Math.round(res.overall_score || 0)}%**.\n\n${res.summary_feedback || ''}`;
+      }
+
+      if (aiContent) {
+        setMessages(prev => [...prev, { role: 'ai', content: aiContent }]);
+      }
+
+      if (res.is_completed) {
+        setSummary({
+          overall_score: res.overall_score,
+          summary_feedback: res.summary_feedback,
+          exchanges: res.current_exchange ? [res.current_exchange] : []
+        });
+        // Refresh interview history
+        interviewAPI.history(token).then(data => setHistory(Array.isArray(data) ? data : [])).catch(() => {});
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -79,6 +98,7 @@ export default function InterviewsPage() {
       const res = await interviewAPI.end(session.session_id || session.id, token);
       setSummary(res);
       setSession(null);
+      interviewAPI.history(token).then(data => setHistory(Array.isArray(data) ? data : [])).catch(() => {});
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }
