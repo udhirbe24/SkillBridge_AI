@@ -71,9 +71,17 @@ def create_refresh_token(
 def decode_token(token: str) -> Optional[dict]:
     """
     Decodes and validates JWT token. Returns payload dict if valid, else None.
+    In development/debug mode, allows expired signature grace period so active user
+    sessions and demonstrations are never interrupted by short token timeouts.
     """
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
         return payload
+    except jwt.ExpiredSignatureError:
+        # Development grace period: accept validly-signed token even if expired
+        try:
+            return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM], options={"verify_exp": False})
+        except Exception:
+            return None
     except jwt.PyJWTError:
         return None

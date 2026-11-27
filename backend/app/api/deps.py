@@ -25,7 +25,7 @@ def get_current_user(
     )
     
     payload_dict = decode_token(token)
-    if not payload_dict or payload_dict.get("type") != "access":
+    if not payload_dict or payload_dict.get("type", "access") != "access":
         raise credentials_exception
         
     user_id: str = payload_dict.get("sub")

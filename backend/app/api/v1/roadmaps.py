@@ -11,7 +11,7 @@ from app.schemas.roadmap import (
     RoadmapItemUpdate
 )
 from app.services.roadmap import generate_user_roadmap
-from app.api.v1.auth import get_current_active_user
+from app.api.deps import get_current_active_user
 
 router = APIRouter(prefix="/roadmaps", tags=["Career Roadmaps"])
 
@@ -41,6 +41,7 @@ def serialize_roadmap(roadmap: CareerRoadmap) -> RoadmapResponse:
     )
 
 @router.post("/generate", response_model=RoadmapResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/generate/", response_model=RoadmapResponse, status_code=status.HTTP_201_CREATED)
 def generate_roadmap(
     payload: RoadmapGenerateRequest,
     db: Session = Depends(get_db),
@@ -52,6 +53,7 @@ def generate_roadmap(
     roadmap = generate_user_roadmap(db, current_user.id, payload.target_role)
     return serialize_roadmap(roadmap)
 
+@router.get("", response_model=List[RoadmapResponse])
 @router.get("/", response_model=List[RoadmapResponse])
 def list_roadmaps(
     db: Session = Depends(get_db),
@@ -60,7 +62,10 @@ def list_roadmaps(
     """
     Retrieves all roadmaps generated for the logged in user.
     """
-    roadmaps = db.query(CareerRoadmap).filter(CareerRoadmap.user_id == current_user.id).all()
+    roadmaps = db.query(CareerRoadmap)\
+        .filter(CareerRoadmap.user_id == current_user.id)\
+        .order_by(CareerRoadmap.created_at.desc())\
+        .all()
     return [serialize_roadmap(r) for r in roadmaps]
 
 @router.get("/{roadmap_id}", response_model=RoadmapResponse)

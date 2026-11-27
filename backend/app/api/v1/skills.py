@@ -22,7 +22,9 @@ def get_role_benchmarks(db: Session = Depends(get_db)):
     return benchmarks
 
 @router.post("/analyze", response_model=SkillGapResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/analyze/", response_model=SkillGapResponse, status_code=status.HTTP_201_CREATED)
 @router.post("/gap-analysis", response_model=SkillGapResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/gap-analysis/", response_model=SkillGapResponse, status_code=status.HTTP_201_CREATED)
 def run_skill_gap_analysis(
     request: SkillGapRequest,
     current_user: User = Depends(get_current_active_user),
@@ -67,6 +69,14 @@ def run_skill_gap_analysis(
     if profile:
         profile.readiness_score = gap_result["readiness_score"]
         profile.target_role = benchmark.role_name
+    else:
+        profile = StudentProfile(
+            user_id=current_user.id,
+            target_role=benchmark.role_name,
+            readiness_score=gap_result["readiness_score"],
+            skills=[]
+        )
+        db.add(profile)
 
     # Audit Log
     audit = AuditLog(

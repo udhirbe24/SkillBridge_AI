@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     # Auth Security
     JWT_SECRET: str = "super-secret-jwt-key-skillbridge-ai-2026-secure-change-in-production"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200  # 30 days
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 60
 
     # Relational Database (PostgreSQL / SQLite fallback for tests)
     DATABASE_URL: str = "sqlite:///./test.db"
